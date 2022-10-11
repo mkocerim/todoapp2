@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 
+import Todo from "./components/Todo";
+
+import TodoForm from "./components/TodoForm";
+
 function App() {
   const [todoText, setTodoText] = useState("");
   const [todos, setTodos] = useState([]);
@@ -7,8 +11,8 @@ function App() {
   const [willUpdateTodo, setWillUpdateTodo] = useState();
   const deleteTodo = (id) => {
     console.log(id);
-    const filteredTodos=todos.filter(item=>item.id !== id);
-    console.log(filteredTodos)
+    const filteredTodos = todos.filter((item) => item.id !== id);
+    console.log(filteredTodos);
     setTodos(filteredTodos);
   };
 
@@ -64,64 +68,24 @@ function App() {
   return (
     <div className="container">
       <h1 className="text-center my-5">Todo App</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="input-group mb-3">
-          <input
-            value={todoText}
-            onChange={(event) => setTodoText(event.target.value)}
-            type="text"
-            className="form-control"
-            placeholder="Type Your Todo"
-          />
-          <button
-            className={`btn btn-${isEdit === true ? "success" : "primary"}`}
-            type="submit"
-          >
-            {isEdit === false ? "Add" : "Save"}
-          </button>
-        </div>
-      </form>
+      <TodoForm 
+      handleSubmit={handleSubmit} 
+      todoText={todoText} 
+      setTodoText={setTodoText} 
+      isEdit={isEdit} />
       {todos.length <= 0 ? (
         <p className="text-center my-5">You don't any todos yet </p>
       ) : (
         <React.Fragment>
           {todos.map((item) => (
-            <div
-              className={`alert alert-${
-                item.isDone === true ? "info" : "secondary"
-              } d-flex justify-content-between aling-items-center`}
-              role="alert"
-            >
-              <p>{item.text}</p>
-              <div>
-                
-                <button
-                  onClick={() => changeIsDone(item.id)}
-                  className={`btn btn-sm btn-${
-                    item.isDone === false ? "success" : "danger"
-                  }`}
-                >
-                  {item.isDone === false ? "Done" : "Undone"}
-                </button>
-                <button
-                  className={`btn btn-sm btn-${item.isDone===true ? "success":"danger"} mx-1`}
-                  onClick={() => deleteTodo(item.id)}
-                >
-                  Delete
-
-                </button>
-                <button
-                  onClick={() => {
-                    setIsEdit(true);
-                    setWillUpdateTodo(item.id);
-                    setTodoText(item.text);
-                  }}
-                  className="btn btn-sm btn-success"
-                >
-                  Edit
-                </button>
-              </div>
-            </div>
+            <Todo
+              item={item}
+              deleteTodo={deleteTodo}
+              setIsEdit={setIsEdit}
+              setWillUpdateTodo={setWillUpdateTodo}
+              setTodoText={setTodoText}
+              changeIsDone={changeIsDone}
+            />
           ))}
         </React.Fragment>
       )}
