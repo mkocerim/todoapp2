@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Todo from "./components/Todo";
 
@@ -9,11 +9,23 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [willUpdateTodo, setWillUpdateTodo] = useState();
+
+  useEffect(() => {
+    const todosFromLocalStorage = localStorage.getItem("todos");
+    console.log(todosFromLocalStorage);
+    if (todosFromLocalStorage === null) {
+      localStorage.setItem("todos", JSON.stringify([]));
+    } else {
+      setTodos(JSON.parse(todosFromLocalStorage));
+    }
+  }, []);
+
   const deleteTodo = (id) => {
     console.log(id);
     const filteredTodos = todos.filter((item) => item.id !== id);
     console.log(filteredTodos);
     setTodos(filteredTodos);
+    localStorage.setItem("todos", JSON.stringify(filteredTodos));
   };
 
   const changeIsDone = (id) => {
@@ -26,6 +38,7 @@ function App() {
     const filteredTodos = todos.filter((item) => item.id !== id);
 
     setTodos([updatedTodo, ...filteredTodos]);
+    localStorage.setItem("todos", JSON.stringify(updatedTodo));
     console.log(filteredTodos);
   };
 
@@ -48,8 +61,13 @@ function App() {
         ...searchedTodo,
         text: todoText,
       };
+
       const filteredTodos = todos.filter((item) => item.id !== willUpdateTodo);
       setTodos([...filteredTodos, updatedTodo]);
+      localStorage.setItem(
+        "todos",
+        JSON.stringify([...filteredTodos, updatedTodo])
+      );
       setTodoText("");
       setIsEdit(false);
       setWillUpdateTodo("");
@@ -62,17 +80,19 @@ function App() {
       };
       console.log("newTodo", newTodo);
       setTodos([...todos, newTodo]);
+      localStorage.setItem("todos", JSON.stringify([...todos, newTodo]));
       setTodoText("");
     }
   };
   return (
     <div className="container">
       <h1 className="text-center my-5">Todo App</h1>
-      <TodoForm 
-      handleSubmit={handleSubmit} 
-      todoText={todoText} 
-      setTodoText={setTodoText} 
-      isEdit={isEdit} />
+      <TodoForm
+        handleSubmit={handleSubmit}
+        todoText={todoText}
+        setTodoText={setTodoText}
+        isEdit={isEdit}
+      />
       {todos.length <= 0 ? (
         <p className="text-center my-5">You don't any todos yet </p>
       ) : (
